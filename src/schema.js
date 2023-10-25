@@ -1,31 +1,26 @@
+const { makeExecutableSchema } = require('graphql-tools');
+const resolvers = require('./resolvers');
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
-  type Song {
-    id: ID!
-    title: String
-    artist: String
-  }
-
   type Playlist{
     id: ID!
     title: String
-    songs: [Song]
-  }
-
-  type User {
-    id: ID!
-    username: String
+    songs: [ID]
   }
 
   type Query {
-    playlist(id: ID!): Playlist
-    user(id: ID!): User
+    playlist(id: ID!): String
   }
 
   type Mutation {
-    likeSong(userId: ID!, songId: ID!): Boolean
+    likeSong(userId: ID!, songId: ID!): String
   }
 `;
 
-module.exports = typeDefs;
+const schema = makeExecutableSchema({
+  typeDefs: typeDefs,
+  resolvers: resolvers,
+});
+
+module.exports = schema;
