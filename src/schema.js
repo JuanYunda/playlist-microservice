@@ -3,12 +3,11 @@ const resolvers = require('./resolvers');
 const { gql } = require('apollo-server');
 
 const typeDefs = gql`
-
   type Query {
-    playlist(userId: ID!): [Playlist]
+    playlistByUser(userId: ID!): [Playlist]
   }
-  
-  type Playlist{
+
+  type Playlist {
     id: ID!
     user: ID!
     title: String!
