@@ -1,10 +1,20 @@
 /*const AWS = require('aws-sdk');
 const dynamoDB = new AWS.DynamoDB.DocumentClient();*/
 
+const playlist = require('./sample');
+
 const resolvers = {
   Query: {
-    playlist(root, args) {
-      return('toma tu playlist ' + args.id + ' y no me molestes.');
+    playlistByUser(root, userId)
+    {
+      console.log(userID);
+      return playlist;
+    }
+  },
+  Mutation: {
+    likePlaylist(root, playlistId){
+      console.log(playlistId);
+      
     }
   }
 };
