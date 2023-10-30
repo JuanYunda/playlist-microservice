@@ -1,0 +1,22 @@
+service: playlists #nombre del servicio
+
+provider:
+  name: aws
+  runtime: nodejs14.x # versión de Node.js 
+  stage: dev
+  region: us-east-1 # región 
+
+functions:
+  graphql:
+    handler: src/resolvers.Query.playlistByUser # ubicación del archivo y la función que maneja GraphQL
+    events:
+      - http:
+          path: /playlist/{id}
+          method: GET
+
+resources:
+  Resources:
+    ApiGatewayRestApi:
+      Type: AWS::ApiGateway::RestApi
+      Properties:
+        Name: ${self:service}-${self:provider.stage}

@@ -1,6 +1,6 @@
 const { makeExecutableSchema } = require('graphql-tools');
 const resolvers = require('./resolvers');
-const { gql } = require('apollo-server');
+const { ApolloServer, gql } = require('apollo-server-lambda');
 
 const typeDefs = gql`
   type Query {
@@ -24,5 +24,9 @@ const schema = makeExecutableSchema({
   typeDefs: typeDefs,
   resolvers: resolvers,
 });
+
+const server = new ApolloServer({ typeDefs, resolvers });
+
+exports.handler = server.createHandler();
 
 module.exports = schema;
