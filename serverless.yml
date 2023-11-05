@@ -2,21 +2,79 @@ service: playlists #nombre del servicio
 
 provider:
   name: aws
-  runtime: nodejs14.x # versión de Node.js 
-  stage: dev
-  region: us-east-1 # región 
+  runtime: nodejs14.x
+  region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        Fn::GetAtt:
+          - SongTable
+          - Arn
+    - Effect: "Allow"
+      Action:
+        - "lambda:InvokeFunction"
+      Resource: "*"            
+ 
+plugins:
+  - serverless-offline
+  - serverless-dynamodb
+
+package:
+  individually: true
+  patterns:
+    - "!.dynamodb"
+    - "!.node_modules"
+
+custom:
+  dynamodb:
+    stages:
+      - dev
+    start:
+      port: 8000
+      inMemory: true
+      migrate: true
 
 functions:
   graphql:
-    handler: src/resolvers.Query.playlistByUser # ubicación del archivo y la función que maneja GraphQL
+    handler: handler.graphqlHandler
+    role: ServiceRole
     events:
-      - http:
-          path: /playlist/{id}
-          method: GET
+    - http:
+        path: /playlist/like
+        method: post
+        cors:
+          origins:
+            - '*'
+    - http:
+        path: /playlist/{id}
+        method: get
+        cors:
+          origins:
+            - '*'
+    - http:
+        path: /playlist
+        method: get
+        cors:
+          origins:
+            - '*'
 
 resources:
   Resources:
-    ApiGatewayRestApi:
-      Type: AWS::ApiGateway::RestApi
+    PlayListsTable:
+      Type: AWS::DynamoDB::Table
       Properties:
-        Name: ${self:service}-${self:provider.stage}
+        TableName: PlayListsTable
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: name
+            AttributeType: S
+          - AttributeName: title 
+            AttributeType: S             
+        KeySchema:
+          - AttributeName: name
+            KeyType: HASH
+          - AttributeName: title
+            KeyType: RANGE                             
+  

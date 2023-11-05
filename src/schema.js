@@ -1,5 +1,9 @@
-const { makeExecutableSchema } = require('graphql-tools');
 const resolvers = require('./resolvers');
+	
+const AWS = require("aws-sdk");
+const dynamoDb = new AWS.DynamoDB.DocumentClient();
+
+
 const { ApolloServer, gql } = require('apollo-server-lambda');
 
 const typeDefs = gql`
@@ -20,13 +24,6 @@ const typeDefs = gql`
   }
 `;
 
-const schema = makeExecutableSchema({
-  typeDefs: typeDefs,
-  resolvers: resolvers,
-});
-
 const server = new ApolloServer({ typeDefs, resolvers });
 
-exports.handler = server.createHandler();
-
-module.exports = schema;
+exports.graphqlHandler = server.createHandler();
